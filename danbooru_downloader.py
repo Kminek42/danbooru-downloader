@@ -3,6 +3,7 @@ import requests
 import re
 import hashlib
 import json
+from dataclasses import dataclass
 
 MAIN_URL = 'https://danbooru.donmai.us'
 
@@ -52,15 +53,19 @@ def get_image_link(post_link: str) -> str | None:
         return None
     return img_links[0]
 
+@dataclass
+class PostDetails:
+    rating: str
+    tags: list[str]
 
-def get_post_tags(post_link: str) -> str:
+def get_post_details(post_link: str) -> PostDetails:
     response = requests.get(post_link)
     soup = BeautifulSoup(response.text, 'html.parser')
     pattern = r"posts\?tags=[^&]+&z=1"
-    tags = ",".join([el.text for el in soup.find_all("a") if re.search(pattern, str(el.get("href")))])
+    tags = [el.text for el in soup.find_all("a") if re.search(pattern, str(el.get("href")))]
 
     rating_element = soup.find(string=re.compile(r'Rating:\s*'))
-    return f'{rating_element}\nTags: {tags}'
+    return PostDetails(rating=rating_element, tags=tags)
 
 
 def get_images_from_page(tags: str | list[str], page_number: int, images_directory_path: str, images_data_path: str):
@@ -83,7 +88,9 @@ def get_images_from_page(tags: str | list[str], page_number: int, images_directo
 
         image_dict = {}
         image_dict["link"] = post_link
-        image_dict["description"] = get_post_tags(post_link)
+        details = get_post_details(post_link)
+        image_dict["rating"] = details.rating
+        image_dict["tags"] = details.tags
         save_image_from_url(image_url, f"{images_directory_path}/{image_id}.jpg")
         posts[image_id] = image_dict
 
