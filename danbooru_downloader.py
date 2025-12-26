@@ -4,6 +4,7 @@ import re
 import hashlib
 import json
 from dataclasses import dataclass
+import argparse
 
 MAIN_URL = 'https://danbooru.donmai.us'
 
@@ -99,15 +100,39 @@ def get_images_from_page(tags: str | list[str], page_number: int, images_directo
                 json.dump(posts, file, indent=4)
 
 
+def create_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Danbooru Image Downloader: Scrapes images and metadata based on predefined tags."
+    )
+
+    parser.add_argument(
+        "images_dir", 
+        help="Local directory path where image files (.jpg) will be saved."
+    )
+    parser.add_argument(
+        "data_path", 
+        help="Path to the JSON file where post metadata (tags, ratings, links) will be stored."
+    )
+
+    return parser
+
 if __name__ == "__main__":
+    parser = create_parser()
+    args = parser.parse_args()
+
     search_configs = [
         (["age:2weeks..24weeks", "order:score", "rating:sensitive", "~filetype:jpg", "~filetype:png"], 5),
         (["genshin_impact", "order:score", "rating:sensitive", "~filetype:jpg", "~filetype:png"], 5),
     ]
 
-
     for config in search_configs:
         tags, max_pages = config
         for page in range(1, max_pages):
-            print(f'Downloading page {page} / {max_pages} for tags: {', '.join(tags)}')
-            get_images_from_page(tags, page, 'images', 'images_data.json')
+            print(f'Downloading page {page} / {max_pages} for tags: {", ".join(tags)}')
+            
+            get_images_from_page(
+                tags, 
+                page, 
+                args.images_dir, 
+                args.data_path
+            )
