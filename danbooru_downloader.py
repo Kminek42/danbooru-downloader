@@ -94,14 +94,8 @@ def get_images_from_page(tags: str | list[str], page_number: int, images_directo
 
 if __name__ == "__main__":
     search_configs = [
-        (["sciamano240", "~filetype:jpg", "~filetype:png"], 10),
-        (["houshou_marine", "order:score", "~filetype:jpg", "~filetype:png"], 10),
-        (["nekoda_(maoda)", "order:score", "~filetype:jpg", "~filetype:png"], 10),
-        (["mignon", "order:score", "~filetype:jpg", "~filetype:png"], 10),
-        (["hololive", "order:score", "rating:safe", "~filetype:jpg", "~filetype:png"], 10),
-        (["age:2weeks..24weeks", "order:score", "~filetype:jpg", "~filetype:png"], 50),
-        (["genshin_impact", "order:score", "~filetype:jpg", "~filetype:png"], 40),
-        (["school_uniform", "order:score", "~filetype:jpg", "~filetype:png"], 40),
+        (["age:2weeks..24weeks", "order:score", "rating:sensitive", "~filetype:jpg", "~filetype:png"], 5),
+        (["genshin_impact", "order:score", "rating:sensitive", "~filetype:jpg", "~filetype:png"], 5),
     ]
 
 
