@@ -1,0 +1,21 @@
+{
+  "settings": {
+    "images_dir": "./downloads",
+    "data_path": "./metadata.json"
+  },
+  "searches": [
+    {
+      "tags": [
+        "age:2weeks..24weeks",
+        "order:score",
+        "rating:sensitive",
+        "~filetype:jpg"
+      ],
+      "pages": 5
+    },
+    {
+      "tags": ["genshin_impact", "order:score", "rating:sensitive"],
+      "pages": 5
+    }
+  ]
+}

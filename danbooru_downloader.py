@@ -65,7 +65,7 @@ def get_post_details(post_link: str) -> PostDetails:
     pattern = r"posts\?tags=[^&]+&z=1"
     tags = [el.text for el in soup.find_all("a") if re.search(pattern, str(el.get("href")))]
 
-    rating_element = soup.find(string=re.compile(r'Rating:\s*'))
+    rating_element = soup.find(string=re.compile(r'Rating:\s*')).split(":")[-1].strip()
     return PostDetails(rating=rating_element, tags=tags)
 
 
@@ -105,14 +105,7 @@ def create_parser() -> argparse.ArgumentParser:
         description="Danbooru Image Downloader: Scrapes images and metadata based on predefined tags."
     )
 
-    parser.add_argument(
-        "images_dir", 
-        help="Local directory path where image files (.jpg) will be saved."
-    )
-    parser.add_argument(
-        "data_path", 
-        help="Path to the JSON file where post metadata (tags, ratings, links) will be stored."
-    )
+    parser.add_argument("--config", default="config.json", help="Path to the JSON file containing tag configurations.")
 
     return parser
 
@@ -120,19 +113,21 @@ if __name__ == "__main__":
     parser = create_parser()
     args = parser.parse_args()
 
-    search_configs = [
-        (["age:2weeks..24weeks", "order:score", "rating:sensitive", "~filetype:jpg", "~filetype:png"], 5),
-        (["genshin_impact", "order:score", "rating:sensitive", "~filetype:jpg", "~filetype:png"], 5),
-    ]
+    with open(args.config, 'r') as f:
+        config = json.load(f)
 
-    for config in search_configs:
-        tags, max_pages = config
+    settings = config['settings']
+
+    for search_config in config['searches']:
+        tags = search_config['tags']
+        max_pages = search_config['pages']
+
         for page in range(1, max_pages):
             print(f'Downloading page {page} / {max_pages} for tags: {", ".join(tags)}')
             
             get_images_from_page(
                 tags, 
                 page, 
-                args.images_dir, 
-                args.data_path
+                settings['images_dir'], 
+                settings['data_path']
             )
