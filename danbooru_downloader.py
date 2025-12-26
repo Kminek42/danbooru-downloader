@@ -95,9 +95,8 @@ def get_images_from_page(tags: str | list[str], page_number: int, images_directo
         save_image_from_url(image_url, f"{images_directory_path}/{image_id}.jpg")
         posts[image_id] = image_dict
 
-        if i % 10 == 0 or i == len(post_links) - 1:
-            with open(images_data_path, "w") as file:
-                json.dump(posts, file, indent=4)
+    with open(images_data_path, "w") as file:
+        json.dump(posts, file, indent=4)
 
 
 def create_parser() -> argparse.ArgumentParser:
